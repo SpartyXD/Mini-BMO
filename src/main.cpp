@@ -84,12 +84,14 @@ int notes_size = sizeof(melody) / sizeof(int);
 int note_duration = 0;
 int pause_between = 0;
 
+//Auxiliary for screen
+bool screen_on = true;
+
 //Functions
 void update();
 void playMusic();
 void initAll();
 void restartMusic();
-void showFace();
 
 //Menus
 void mainFace();
@@ -97,6 +99,10 @@ void servoDance();
 void musicScreen();
 void selectingMenu();
 void turnedOff();
+
+//Movements
+void showFace(int idx);
+void danceMoves(int idx); //TODO: Implement array for servo movements
 
 //-----------------
 void setup(){
@@ -274,6 +280,11 @@ void showFace(int idx){
   display.display();
 }
 
+//TODO Implement this
+void danceMoves(int idx){
+
+}
+
 //==================
 //MENUS
 //==================
@@ -301,10 +312,11 @@ void servoDance(){
 void musicScreen(){
   //Button check
   if(buttons[0])
-    music_active = !music_active;
+    music_active = !music_active; //Alternate music
   
   if(!music_active){
     showFace(3); //Sad face
+    //danceMoves();
   }
   else{
     showFace(dancing_face); //Current face
@@ -348,10 +360,50 @@ void selectingMenu(){
   }
 }
 
+//Turn off?
 void turnedOff(){
   //TO DO
   display.clearDisplay();
   display.setCursor(0, 0);
-  display.print("TURN OFF SCREEN");
+  display.println("TURN OFF BMO?\n");
+  display.println("(Press A to turn off)");
   display.display();
+
+  //Check the buttons
+  if(buttons[0] && screen_on){
+    screen_on = false;
+
+    //TODO: Add music beeps for turning off mode
+
+    //Display changes
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.print("Goodbye...");
+    display.display();
+
+    //Change to main screen
+    CURRENT_MENU = 0;
+    LAST_MENU = 0;
+
+    //Shutdown all
+    delay(800);
+    leftArm.write(HANDS_DOWN);
+    delay(1000);
+    rightArm.write(HANDS_DOWN);
+    delay(1000);
+
+    //TURN OFF
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.display();
+  }
+
+  //Infinite bucle if the screen is off
+  while(!screen_on){
+    update(); //If button is pressed wake up
+
+    if(buttons[0])
+      screen_on = true;
+  }
+  
 }
