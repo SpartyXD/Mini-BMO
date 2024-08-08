@@ -89,6 +89,7 @@ void update();
 void playMusic();
 void initAll();
 void restartMusic();
+void showFace();
 
 //Menus
 void mainFace();
@@ -268,6 +269,12 @@ void playMusic(){
   delay(pause_between);
 }
 
+// 0-Frontis / 1-Left / 2-Right/ 3-Wink
+void showFace(int idx){
+  display.clearDisplay();
+  display.drawBitmap(0, 0, Caras[current_face], 128, 64, SH110X_WHITE);
+  display.display();
+}
 
 //==================
 //MENUS
@@ -290,14 +297,13 @@ void mainFace(){
 }
 
 void servoDance(){
-  //TODO
+  //TODO complete this menu
 }
 
 void musicScreen(){
-  //TO DO
+  //TODO Finish up the music details
   display.clearDisplay();
   display.setCursor(0, 0);
-  display.print("MUSIC SCREEN");
   display.display();
 }
 
