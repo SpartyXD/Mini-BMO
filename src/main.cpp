@@ -205,9 +205,7 @@ void initAll(){
   pause_between = 0;
 
   //Components
-  display.clearDisplay();
-  display.drawBitmap(0, 0, Caras[0], 128, 64, SH110X_WHITE);
-  display.display();
+  showFace(0);
 
   leftArm.write(STRAIGHT);
   rightArm.write(STRAIGHT);
@@ -301,10 +299,16 @@ void servoDance(){
 }
 
 void musicScreen(){
-  //TODO Finish up the music details
-  display.clearDisplay();
-  display.setCursor(0, 0);
-  display.display();
+  //Button check
+  if(buttons[0])
+    music_active = !music_active;
+  
+  if(!music_active){
+    showFace(3); //Sad face
+  }
+  else{
+    showFace(dancing_face); //Current face
+  }
 }
 
 void selectingMenu(){
