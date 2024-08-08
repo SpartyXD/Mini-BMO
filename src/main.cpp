@@ -59,6 +59,23 @@ const int HANDS_UP = 180;
 const int xNEUTRAL = 510;
 const int yNEUTRAL = 502;
 
+//Servo dances
+int servo_dances[9][2] = {
+  {HANDS_DOWN, HANDS_DOWN}, 
+
+  {HANDS_DOWN, HANDS_UP}, 
+  {HANDS_UP, HANDS_DOWN}, 
+
+  {STRAIGHT, HANDS_UP}, 
+  {HANDS_UP, STRAIGHT},
+  {STRAIGHT, HANDS_DOWN},
+  {HANDS_DOWN, STRAIGHT},
+
+  {STRAIGHT, STRAIGHT},
+
+  {HANDS_UP, HANDS_UP},
+  };
+
 //=======
 
 //-----------------
