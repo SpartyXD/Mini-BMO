@@ -60,6 +60,17 @@ const int xNEUTRAL = 510;
 const int yNEUTRAL = 502;
 
 //Servo dances
+/*
+0 = DOWN DOWN
+
+1, 2 = (DOWN UP)
+3, 4 = (STRAIGHT UP)
+5, 6 = (STRAIGHT DOWN)
+
+7 = STRAIGHT
+
+8 = UP UP
+*/
 int servo_dances[9][2] = {
   {HANDS_DOWN, HANDS_DOWN}, 
 
@@ -74,7 +85,10 @@ int servo_dances[9][2] = {
   {STRAIGHT, STRAIGHT},
 
   {HANDS_UP, HANDS_UP},
-  };
+};
+
+int current_dance = 0;
+int MAX_DANCE = sizeof(servo_dances)/sizeof(int); //Get max N
 
 //=======
 
@@ -119,7 +133,8 @@ void turnedOff();
 
 //Movements
 void showFace(int idx);
-void danceMoves(int idx); //TODO: Implement array for servo movements
+void danceMoves(int idx);
+void moveArms(int leftPos, int rightPos);
 
 //-----------------
 void setup(){
@@ -239,6 +254,7 @@ void restartMusic(){
   //Variables
   dancing_face = 0;
 
+
   //Notes
   current_note = 0;
   current_melody = 0;
@@ -297,10 +313,17 @@ void showFace(int idx){
   display.display();
 }
 
-//TODO Implement this
-void danceMoves(int idx){
 
+void danceMoves(int idx){
+  leftArm.write(servo_dances[idx][0]);
+  rightArm.write(servo_dances[idx][1]);
 }
+
+void moveArms(int leftPos, int rightPos){
+  leftArm.write(leftPos);
+  rightArm.write(rightPos);
+}
+
 
 //==================
 //MENUS
