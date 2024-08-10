@@ -2,7 +2,7 @@
 #include <SPI.h>      //SPI library for communicate with the nRF24L01+
 #include "RF24.h"     //The main library of the nRF24L01+
 #include <Adafruit_GFX.h>
-#include <Adafruit_SH110X.h>
+#include <Adafruit_SSD1306.h>
 #include <Wire.h>
 #include <Servo.h>
 
@@ -38,14 +38,14 @@ int data[4];
 RF24 radio(9,10);
 
 //Create a pipe addresses for the communicate
-const byte pipe[6] = "00001";
+const uint64_t pipe = 0xE8E8F0F0E1LL;
 
 //LCD display
 #define screen_adress 0x3c
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64 
 #define OLED_RESET -1
-Adafruit_SH1106G display = Adafruit_SH1106G(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 //Servos
 Servo leftArm;
@@ -147,10 +147,12 @@ void setup(){
 
   //Setup
   Serial.begin(9600);
+  Serial.println("\nIniciando sistemas...\n");
   radio.begin();                    //Start the nRF24 communicate            
-  radio.openReadingPipe(0, pipe);   //Sets the address of the transmitter to which the program will receive data.
-  radio.startListening();   
+  radio.openReadingPipe(1, pipe);   //Sets the address of the transmitter to which the program will receive data.
+  radio.startListening();    
 
+  Serial.println("\nIniciando Servo...\n");
   //Servos
   leftArm.attach(leftServoPin);
   rightArm.attach(rightServoPin);
@@ -159,27 +161,29 @@ void setup(){
   rightArm.write(STRAIGHT);
 
   // Init oled
-  display.begin(screen_adress, true);
-  display.display();
+  Serial.println("\nIniciando Pantalla...\n");
+  // display.begin(screen_adress, OLED_RESET);
+  // display.display();
 
-  //Format text
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SH110X_WHITE);
-  delay(3500);
+  // //Format text
+  // display.clearDisplay();
+  // display.setTextSize(1);
+  // display.setTextColor(SSD1306_WHITE);
+  // delay(3500);
 
   //Init messages
-  Serial.println("\nIniciando sistemas...\n");
+  Serial.println("\nBMO iniciandose...\n");
   display.println("BMO\n\nIniciandose....");
-  display.display();
+  // display.display();
   delay(1500);
 
   initAll();
 }
 
 void loop(){
+  Serial.print("CURRENT MENU: "); Serial.println(CURRENT_MENU);
   update();
-  playMusic();
+  // playMusic();
 
   //Check if menu selector active
   if(buttons[1]){
@@ -193,38 +197,36 @@ void loop(){
     }
   }
 
-  //Update current menu
-  switch (CURRENT_MENU){
-  case 0:
-    //BMO
-    mainFace();
-    break;
+  // //Update current menu
+  // switch (CURRENT_MENU){
+  // case 0:
+  //   //BMO
+  //   mainFace();
+  //   break;
 
-  case 1:
-    //Servo Dance
-    servoDance();
-    break;
+  // case 1:
+  //   //Servo Dance
+  //   servoDance();
+  //   break;
 
-  case 2:
-    //Change music
-    musicScreen();
-    break;
+  // case 2:
+  //   //Change music
+  //   musicScreen();
+  //   break;
 
-  case 3:
-    //Selecting Menu
-    selectingMenu();
-    break;
+  // case 3:
+  //   //Selecting Menu
+  //   selectingMenu();
+  //   break;
 
-  case 4:
-    //Turn OFF
-    turnedOff();
-    break;
+  // case 4:
+  //   //Turn OFF
+  //   turnedOff();
+  //   break;
 
-  default:
-    break;
-  }
-
-  delay(150);
+  // default:
+  //   break;
+  // }
 }
 
 
@@ -264,14 +266,14 @@ void restartMusic(){
 
 void update(){
   if (radio.available()){
-    radio.read(&data, sizeof(data));
+    radio.read(data, sizeof(data));
 
     //Debug
-    Serial.print("X: "); Serial.println(data[0]);
-    Serial.print("Y: "); Serial.println(data[1]);
-    Serial.print("SW: "); Serial.println(data[2]);
-    Serial.print("SW2: "); Serial.println(data[3]);
-    Serial.println("========");
+    // Serial.print("X: "); Serial.println(data[0]);
+    // Serial.print("Y: "); Serial.println(data[1]);
+    // Serial.print("SW: "); Serial.println(data[2]);
+    // Serial.print("SW2: "); Serial.println(data[3]);
+    // Serial.println("========");
 
     //Update joystick info
     joystick[0] = data[0];
@@ -283,6 +285,11 @@ void update(){
   }
   else
     Serial.println("No data :(\n");
+  
+  if(buttons[0])
+    Serial.println("BUTTON A PRESSED");
+  if(buttons[1])
+    Serial.println("BUTTON B PRESSED");
 }
 
 void playMusic(){
@@ -308,9 +315,9 @@ void playMusic(){
 
 // 0-Frontis / 1-Left / 2-Right/ 3-Wink
 void showFace(int idx){
-  display.clearDisplay();
-  display.drawBitmap(0, 0, Caras[current_face], 128, 64, SH110X_WHITE);
-  display.display();
+  // display.clearDisplay();
+  // display.drawBitmap(0, 0, Caras[current_face], 128, 64, SSD1306_WHITE);
+  // display.display();
 }
 
 
@@ -340,9 +347,9 @@ void mainFace(){
     current_face = 0; //Frontal view
   
   //Apply changes
-  display.clearDisplay();
-  display.drawBitmap(0, 0, Caras[current_face], 128, 64, SH110X_WHITE);
-  display.display();
+  // display.clearDisplay();
+  // display.drawBitmap(0, 0, Caras[current_face], 128, 64, SSD1306_WHITE);
+  // display.display();
 }
 
 void servoDance(){
@@ -370,29 +377,31 @@ void selectingMenu(){
   else if(joystick[1] < yNEUTRAL)
     CURRENT_OPTION = max(CURRENT_OPTION-1, 0);
 
-  display.clearDisplay();
-  display.setCursor(0, 0);
-  display.println("=====MENU=====\n");
+  Serial.print("Current OPTION: "); Serial.println(CURRENT_OPTION);
+
+  // display.clearDisplay();
+  // display.setCursor(0, 0);
+  // display.println("=====MENU=====\n");
   
   //Display options
-  rep(i, N_OF_MENUS){
-    if(i == CURRENT_OPTION)
-      display.print("> ");
-    else
-      display.print(" ");
-    display.println(menu_options[i] + "\n");
-  }
+  // rep(i, N_OF_MENUS){
+  //   if(i == CURRENT_OPTION)
+  //     display.print("> ");
+  //   else
+  //     display.print(" ");
+  //   display.println(menu_options[i] + "\n");
+  // }
 
-  display.println("==============\n");
-  display.display();
+  // display.println("==============\n");
+  // display.display();
 
   //See if selected
   if(buttons[0]){
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.println("You selected:\n");
-    display.println(menu_options[CURRENT_OPTION]);
-    display.display();
+    // display.clearDisplay();
+    // display.setCursor(0, 0);
+    // display.println("You selected:\n");
+    // display.println(menu_options[CURRENT_OPTION]);
+    // display.display();
 
     //Change active menu
     CURRENT_MENU = CURRENT_OPTION;
@@ -403,11 +412,11 @@ void selectingMenu(){
 //Turn off?
 void turnedOff(){
   //TO DO
-  display.clearDisplay();
-  display.setCursor(0, 0);
-  display.println("TURN OFF BMO?\n");
-  display.println("(Press A to turn off)");
-  display.display();
+  // display.clearDisplay();
+  // display.setCursor(0, 0);
+  // display.println("TURN OFF BMO?\n");
+  // display.println("(Press A to turn off)");
+  // display.display();
 
   //Check the buttons
   if(buttons[0] && screen_on){
@@ -416,10 +425,10 @@ void turnedOff(){
     //TODO: Add music beeps for turning off mode
 
     //Display changes
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.print("Goodbye...");
-    display.display();
+    // display.clearDisplay();
+    // display.setCursor(0, 0);
+    // display.print("Goodbye...");
+    // display.display();
 
     //Change to main screen
     CURRENT_MENU = 0;
@@ -432,10 +441,10 @@ void turnedOff(){
     rightArm.write(HANDS_DOWN);
     delay(1000);
 
-    //TURN OFF
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.display();
+    // //TURN OFF
+    // display.clearDisplay();
+    // display.setCursor(0, 0);
+    // display.display();
   }
 
   //Infinite bucle if the screen is off
