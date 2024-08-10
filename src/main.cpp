@@ -14,9 +14,9 @@
 #define rep(i, n) for(int i=0; i<n; i++)
 
 //Pins
-const int leftServoPin = 0;
-const int rightServoPin = 0;
-const int buzzerPin = 0;
+const int leftServoPin = 6;
+const int rightServoPin = 5;
+const int buzzerPin = 3;
 const int redPin = 0;
 const int greenPin = 0;
 
